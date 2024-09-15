@@ -2,6 +2,7 @@ package com.jkc.core.user.service;
 
 import com.jkc.core.user.entity.UserModel;
 import com.jkc.core.user.repository.UserRepository;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -39,11 +40,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addFriend(Long userId, Long friendId) {
         Optional<UserModel> userOptional = userRepository.findById(userId);
+        Optional<UserModel> friendOptional = userRepository.findById(friendId);
 
-        if (userOptional.isPresent()) {
+        if (userOptional.isPresent() && friendOptional.isPresent()) {
             UserModel userModel = userOptional.get();
+            UserModel friendModel = friendOptional.get();
+
             userModel.friendUserIds.add(friendId);
+            friendModel.friendUserIds.add(userId);
+
             userRepository.save(userModel);
+            userRepository.save(friendModel);
         } else {
             throw new IllegalArgumentException("UserModel Not found while fetching friends");
         }
