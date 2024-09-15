@@ -1,15 +1,12 @@
 package com.jkc.core.user.service;
 
-import com.jkc.core.user.entity.User;
+import com.jkc.core.user.entity.UserModel;
 import com.jkc.core.user.repository.UserRepository;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.jkc.core.utils.CollectionUtils.toList;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -19,42 +16,43 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Long> getAllFriends(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<UserModel> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()) {
             return userOptional.get().friendUserIds;
         } else {
-            throw new IllegalArgumentException("User Not found while fetching friends");
+            throw new IllegalArgumentException("UserModel Not found while fetching friends");
         }
     }
 
     @Override
-    public User getUser(Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
+    public UserModel getUser(Long id) {
+        Optional<UserModel> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()) {
             return userOptional.get();
         } else {
-            throw new IllegalArgumentException("User Not found while fetching friends");
+            throw new IllegalArgumentException("UserModel Not found while fetching friends");
         }
     }
 
     @Override
     public void addFriend(Long userId, Long friendId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<UserModel> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.friendUserIds.add(friendId);
-            userRepository.save(user);
+            UserModel userModel = userOptional.get();
+            userModel.friendUserIds.add(friendId);
+            userRepository.save(userModel);
         } else {
-            throw new IllegalArgumentException("User Not found while fetching friends");
+            throw new IllegalArgumentException("UserModel Not found while fetching friends");
         }
     }
 
     @Override
-    public void updateOrCreateUser(User user) {
-        userRepository.save(user);
+    public UserModel updateOrCreateUser(UserModel userModel) {
+        userModel.friendUserIds = new ArrayList<>();
+        return userRepository.save(userModel);
     }
 
     @Override
@@ -63,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return toList(userRepository.findAll());
+    public List<UserModel> getAllUsers() {
+        return new ArrayList<>(userRepository.findAll());
     }
 }
